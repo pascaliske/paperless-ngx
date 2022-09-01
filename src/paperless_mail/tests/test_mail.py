@@ -1030,20 +1030,3 @@ class TestTasks(TestCase):
         m.side_effect = lambda account: 0
         result = tasks.process_mail_accounts()
         self.assertIn("No new", result)
-
-    @mock.patch("paperless_mail.tasks.MailAccountHandler.handle_mail_account")
-    def test_single_accounts(self, m):
-        MailAccount.objects.create(
-            name="A",
-            imap_server="A",
-            username="A",
-            password="A",
-        )
-
-        tasks.process_mail_account("A")
-
-        m.assert_called_once()
-        m.reset_mock()
-
-        tasks.process_mail_account("B")
-        m.assert_not_called()

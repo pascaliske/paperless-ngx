@@ -18,7 +18,6 @@ from .models import Correspondent
 from .models import Document
 from .models import DocumentType
 from .models import MatchingModel
-from .models import PaperlessTask
 from .models import SavedView
 from .models import SavedViewFilterRule
 from .models import StoragePath
@@ -618,7 +617,7 @@ class UiSettingsViewSerializer(serializers.ModelSerializer):
 
 class TasksViewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = PaperlessTask
+        model = None
         depth = 1
         fields = "__all__"
 

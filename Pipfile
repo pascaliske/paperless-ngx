@@ -52,6 +52,9 @@ concurrent-log-handler = "*"
 zipp = {version = "*", markers = "python_version < '3.9'"}
 pyzbar = "*"
 pdf2image = "*"
+celery = {extras = ["redis"], version = "*"}
+django-celery-results = "*"
+django-celery-beat = "*"
 
 [dev-packages]
 coveralls = "*"

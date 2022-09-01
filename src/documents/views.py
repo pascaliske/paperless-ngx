@@ -28,7 +28,7 @@ from django.utils.translation import get_language
 from django.views.decorators.cache import cache_control
 from django.views.generic import TemplateView
 from django_filters.rest_framework import DjangoFilterBackend
-from django_q.tasks import async_task
+from documents.tasks import consume_file
 from packaging import version as packaging_version
 from paperless import version
 from paperless.db import GnuPG
@@ -612,8 +612,7 @@ class PostDocumentView(GenericAPIView):
 
         task_id = str(uuid.uuid4())
 
-        async_task(
-            "documents.tasks.consume_file",
+        consume_file.delay(
             temp_filename,
             override_filename=doc_name,
             override_title=title,

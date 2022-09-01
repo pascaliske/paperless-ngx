@@ -129,6 +129,8 @@ INSTALLED_APPS = [
     "rest_framework.authtoken",
     "django_filters",
     "django_q",
+    "django_celery_results",
+    "django_celery_beat",
 ] + env_apps
 
 if DEBUG:
@@ -179,6 +181,8 @@ ASGI_APPLICATION = "paperless.asgi.application"
 STATIC_URL = os.getenv("PAPERLESS_STATIC_URL", BASE_URL + "static/")
 WHITENOISE_STATIC_PREFIX = "/static/"
 
+_REDIS_URL = os.getenv("PAPERLESS_REDIS", "redis://localhost:6379")
+
 # TODO: what is this used for?
 TEMPLATES = [
     {
@@ -200,7 +204,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels_redis.core.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.getenv("PAPERLESS_REDIS", "redis://localhost:6379")],
+            "hosts": [_REDIS_URL],
             "capacity": 2000,  # default 100
             "expiry": 15,  # default 60
         },
@@ -454,16 +458,22 @@ PAPERLESS_WORKER_RETRY: Final[int] = __get_int(
     PAPERLESS_WORKER_TIMEOUT + 10,
 )
 
-Q_CLUSTER = {
-    "name": "paperless",
-    "guard_cycle": 5,
-    "catch_up": False,
-    "recycle": 1,
-    "retry": PAPERLESS_WORKER_RETRY,
-    "timeout": PAPERLESS_WORKER_TIMEOUT,
-    "workers": TASK_WORKERS,
-    "redis": os.getenv("PAPERLESS_REDIS", "redis://localhost:6379"),
-    "log_level": "DEBUG" if DEBUG else "INFO",
+CELERY_BROKER_URL = _REDIS_URL
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_WORKER_CONCURRENCY = TASK_WORKERS
+CELERY_WORKER_MAX_TASKS_PER_CHILD = 1
+CELERT_TASK_SERIALIZER = "pickle"
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = PAPERLESS_WORKER_TIMEOUT
+CELERY_RESULT_BACKEND = "django-db"
+CELERY_CACHE_BACKEND = "default"
+
+# django setting.
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.redis.RedisCache",
+        "LOCATION": _REDIS_URL,
+    },
 }
 
 

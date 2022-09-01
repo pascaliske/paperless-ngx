@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 
-import django_q
 from django.conf import settings
 from django.contrib.admin.models import ADDITION
 from django.contrib.admin.models import LogEntry
@@ -503,7 +502,6 @@ def add_to_index(sender, document, **kwargs):
     index.add_or_update_document(document)
 
 
-@receiver(django_q.signals.pre_enqueue)
 def init_paperless_task(sender, task, **kwargs):
     if task["func"] == "documents.tasks.consume_file":
         try:
@@ -519,7 +517,6 @@ def init_paperless_task(sender, task, **kwargs):
             logger.error(f"Creating PaperlessTask failed: {e}")
 
 
-@receiver(django_q.signals.pre_execute)
 def paperless_task_started(sender, task, **kwargs):
     try:
         if task["func"] == "documents.tasks.consume_file":
@@ -534,7 +531,6 @@ def paperless_task_started(sender, task, **kwargs):
         logger.error(f"Creating PaperlessTask failed: {e}")
 
 
-@receiver(models.signals.post_save, sender=django_q.models.Task)
 def update_paperless_task(sender, instance, **kwargs):
     try:
         if instance.func == "documents.tasks.consume_file":
