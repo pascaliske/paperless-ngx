@@ -10,6 +10,7 @@ from typing import Optional
 from typing import Set
 from urllib.parse import urlparse
 
+from celery.schedules import crontab
 from concurrent_log_handler.queue import setup_logging_queues
 from django.utils.translation import gettext_lazy as _
 from dotenv import load_dotenv
@@ -130,7 +131,7 @@ INSTALLED_APPS = [
     "django_filters",
     "django_q",
     "django_celery_results",
-    "django_celery_beat",
+    # "django_celery_beat",
 ] + env_apps
 
 if DEBUG:
@@ -460,13 +461,39 @@ PAPERLESS_WORKER_RETRY: Final[int] = __get_int(
 
 CELERY_BROKER_URL = _REDIS_URL
 CELERY_TIMEZONE = TIME_ZONE
+CELERY_WORKER_HIJACK_ROOT_LOGGER = False
 CELERY_WORKER_CONCURRENCY = TASK_WORKERS
 CELERY_WORKER_MAX_TASKS_PER_CHILD = 1
-CELERT_TASK_SERIALIZER = "pickle"
 CELERY_TASK_TRACK_STARTED = True
+CELERY_RESULT_EXTENDED = True
+CELERY_SEND_TASK_SENT_EVENT = True
 CELERY_TASK_TIME_LIMIT = PAPERLESS_WORKER_TIMEOUT
 CELERY_RESULT_BACKEND = "django-db"
 CELERY_CACHE_BACKEND = "default"
+
+CELERY_BEAT_SCHEDULE = {
+    # Every ten minutes
+    "Check all e-mail accounts": {
+        "task": "paperless_mail.tasks.process_mail_accounts",
+        "schedule": crontab(minute="*/10"),
+    },
+    # Hourly at 5 minutes past the hour
+    "Train the classifier": {
+        "task": "documents.tasks.train_classifier",
+        "schedule": crontab(minute="5", hour="*/1"),
+    },
+    # Daily at midnight
+    "Optimize the index": {
+        "task": "documents.tasks.index_optimize",
+        "schedule": crontab(minute=0, hour=0),
+    },
+    # Weekly, Sunday at 00:30
+    "Perform sanity check": {
+        "task": "documents.tasks.sanity_check",
+        "schedule": crontab(minute=30, hour=0, day_of_week="sun"),
+    },
+}
+
 
 # django setting.
 CACHES = {

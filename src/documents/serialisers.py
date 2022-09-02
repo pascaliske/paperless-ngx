@@ -12,6 +12,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext as _
 from rest_framework import serializers
 from rest_framework.fields import SerializerMethodField
+from django_celery_results.models import TaskResult
 
 from . import bulk_edit
 from .models import Correspondent
@@ -23,6 +24,7 @@ from .models import SavedViewFilterRule
 from .models import StoragePath
 from .models import Tag
 from .models import UiSettings
+from .models import PaperlessTask
 from .parsers import is_mime_type_supported
 
 
@@ -617,7 +619,7 @@ class UiSettingsViewSerializer(serializers.ModelSerializer):
 
 class TasksViewSerializer(serializers.ModelSerializer):
     class Meta:
-        model = None
+        model = PaperlessTask
         depth = 1
         fields = "__all__"
 
@@ -638,17 +640,7 @@ class TasksViewSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
     def get_status(self, obj):
-        if obj.attempted_task is None:
-            if obj.started:
-                return "started"
-            else:
-                return "queued"
-        elif obj.attempted_task.success:
-            return "complete"
-        elif not obj.attempted_task.success:
-            return "failed"
-        else:
-            return "unknown"
+        return obj.attempted_task.status
 
 
 class AcknowledgeTasksViewSerializer(serializers.Serializer):

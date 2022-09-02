@@ -620,7 +620,6 @@ class PostDocumentView(GenericAPIView):
             override_document_type_id=document_type_id,
             override_tag_ids=tag_ids,
             task_id=task_id,
-            task_name=os.path.basename(doc_name)[:100],
             override_created=created,
         )
 
@@ -881,7 +880,7 @@ class TasksViewSet(ReadOnlyModelViewSet):
         PaperlessTask.objects.filter(
             acknowledged=False,
         )
-        .order_by("created")
+        .order_by("attempted_task__date_created")
         .reverse()
     )
 

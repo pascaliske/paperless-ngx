@@ -95,7 +95,6 @@ def _consume(filepath):
         consume_file.delay(
             filepath,
             override_tag_ids=tag_ids if tag_ids else None,
-            task_name=os.path.basename(filepath)[:100],
         )
     except Exception:
         # Catch all so that the consumer won't crash.
