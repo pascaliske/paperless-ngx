@@ -527,8 +527,6 @@ class UiSettings(models.Model):
 
 
 class PaperlessTask(models.Model):
-    name = models.CharField(max_length=256)
-    created = models.DateTimeField(_("created"), auto_now=True)
     acknowledged = models.BooleanField(default=False)
 
     attempted_task = models.OneToOneField(

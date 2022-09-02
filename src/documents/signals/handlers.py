@@ -2,7 +2,6 @@ import logging
 import os
 import shutil
 
-import celery
 from django.conf import settings
 from django.contrib.admin.models import ADDITION
 from django.contrib.admin.models import LogEntry
@@ -15,7 +14,6 @@ from django.dispatch import receiver
 from django.utils import termcolors
 from django.utils import timezone
 from django_celery_results.models import TaskResult
-from documents.tasks import consume_file
 from filelock import FileLock
 
 from .. import matching
