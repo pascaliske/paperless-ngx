@@ -640,7 +640,10 @@ class TasksViewSerializer(serializers.ModelSerializer):
     status = serializers.SerializerMethodField()
 
     def get_status(self, obj):
-        return obj.attempted_task.status
+        result = "unknown"
+        if hasattr(obj, "attempted_task") and obj.attempted_task:
+            result = obj.attempted_task.status
+        return result.lower()
 
 
 class AcknowledgeTasksViewSerializer(serializers.Serializer):

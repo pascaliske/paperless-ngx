@@ -525,8 +525,12 @@ class UiSettings(models.Model):
     def __str__(self):
         return self.user.username
 
+
 class PaperlessTask(models.Model):
+    name = models.CharField(max_length=256)
+    created = models.DateTimeField(_("created"), auto_now=True)
     acknowledged = models.BooleanField(default=False)
+
     attempted_task = models.OneToOneField(
         TaskResult,
         on_delete=models.CASCADE,
@@ -534,6 +538,7 @@ class PaperlessTask(models.Model):
         null=True,
         blank=True,
     )
+
 
 class Comment(models.Model):
     comment = models.TextField(
