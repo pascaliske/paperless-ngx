@@ -247,7 +247,7 @@ class TestMail(DirectoriesMixin, TestCase):
         m.return_value = self.bogus_mailbox
         self.addCleanup(patcher.stop)
 
-        patcher = mock.patch("paperless_mail.mail.async_task")
+        patcher = mock.patch("paperless_mail.mail.consume_file.delay")
         self.async_task = patcher.start()
         self.addCleanup(patcher.stop)
 

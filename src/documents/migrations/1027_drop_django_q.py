@@ -12,7 +12,13 @@ class Migration(migrations.Migration):
     # Manual SQL commands to drop the django_q related tables
     # if they exist
     operations = [
-        migrations.RunSQL("DROP TABLE IF EXISTS django_q_ormq"),
-        migrations.RunSQL("DROP TABLE IF EXISTS django_q_schedule"),
-        migrations.RunSQL("DROP TABLE IF EXISTS django_q_task"),
+        migrations.RunSQL(
+            "DROP TABLE IF EXISTS django_q_ormq", reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            "DROP TABLE IF EXISTS django_q_schedule", reverse_sql=migrations.RunSQL.noop
+        ),
+        migrations.RunSQL(
+            "DROP TABLE IF EXISTS django_q_task", reverse_sql=migrations.RunSQL.noop
+        ),
     ]
