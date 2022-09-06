@@ -129,9 +129,7 @@ INSTALLED_APPS = [
     "rest_framework",
     "rest_framework.authtoken",
     "django_filters",
-    "django_q",
     "django_celery_results",
-    # "django_celery_beat",
 ] + env_apps
 
 if DEBUG:
